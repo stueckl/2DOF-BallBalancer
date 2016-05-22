@@ -1,0 +1,4 @@
+%main
+
+%start program
+Controller();
