@@ -31,9 +31,9 @@ classdef SerialPort < handle
         end %Open()
         
         function Flush(obj)                % flush (read in all data) from port, to clear it
-            n=obj.BytesAvailable();
+            n=obj.connection.BytesAvailable();
             if (n > 0)
-                fread(s, n, 'uint8');
+                fread(obj.connection, n, 'uint8');
             end
         end % Flush
         
@@ -49,7 +49,7 @@ classdef SerialPort < handle
             if (nargin<1)
                 n = obj.BytesAvailable();
             end
-            l=fread(s, n, 'uint8');
+            l=fread(obj.connection, n, 'uint8');
         end %Read()
         
         
