@@ -3,11 +3,12 @@ classdef Controller < handle
     %   Detailed explanation goes here
     
     properties
+        isRunning
         model %contains buisness logic
         dvs % sensor
         view % graphical user Interface (run in other thread slow 30-60fps)
         servos
-        dat %TODO: remove Test
+        dat %TODO for test only
     end %events
     
     methods
@@ -24,21 +25,31 @@ classdef Controller < handle
             %start DVS (in Model)
             obj.dvs.Connect();  
             
-            %TODO remove this part (bad testing)
-            tic; 
-            obj.dat = [];
-            obj.dvs.GetEvents();
-            while (toc<5.0)                        % run for 5 sec
-                if obj.dvs.EventsAvailable()
-                    obj.dat =  [obj.dat; {obj.dvs.GetEvents()}];
-                end %if obj.dvs.EventsAvailable()
-            end %while
-            disp(obj.dat)
-            
             %TODO: start view (if useful)
             
+            %run programm
+            obj.Run();
+        
             %TODO: clean up
         end
+        
+        function Run(obj)
+            while obj.isRunning
+                %check for new events
+                %TODO: solve it event based
+                if obj.dvs.EventsAvailable()
+                    eventData =  obj.dvs.GetEvents();
+                    %put them in filter & position calculation
+                    %put them to gui
+                    
+                    %regler
+                    
+                    %motor movement
+                    
+                end %if obj.dvs.EventsAvailable()
+            end %while
+        end %Run()
+            
         
     end %methods 
     
