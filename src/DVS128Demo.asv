@@ -8,6 +8,8 @@ classdef DVS128Demo < handle
         serial %serial Port
         demodata
         demodataI
+        path
+        filename
     end %properties
     
     events
@@ -48,19 +50,20 @@ classdef DVS128Demo < handle
             %obj.serial.Read(3);     
             
             % Load file
-            file = load('settings.mat');
-            disp(file)
-
-            obj.demodata = load(file.filename);
+            %TODO select by Gui
+            file = load('settings.mat'); 
+            
+            obj.demodata = load(file);
             obj.demodataI = 1;
             
-            disp(strcat('DVS128 start event streaming from: ', file.filename));            
+            disp(strcat('DVS128 start event streaming from ', file));            
 
         end %connect()
         
         function setFileName(obj, path, name)
-           filename = strcat([path, name]);
-           save('settings.mat', 'filename');
+           obj.path = path;
+           obj.filename = name;
+           save('settings.mat', '')
            obj.Connect();
         end
         

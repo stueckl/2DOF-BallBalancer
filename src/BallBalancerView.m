@@ -2,8 +2,6 @@ classdef BallBalancerView < handle
     %BallbalancerView Summary of this class goes here
     %   Detailed explanation goes here
     
-    %TODO ELIMINATE BUGS :)
-    
     properties
         controllerHandle
         fig
@@ -11,6 +9,7 @@ classdef BallBalancerView < handle
         plt
         leftConEl
         southConEl
+        demoLocBox
     end
     
     methods
@@ -49,7 +48,7 @@ classdef BallBalancerView < handle
                 'Value', obj.controllerHandle.useDemoBool);
            
             %location where demo file is located
-            demoLocBox = uicontrol(obj.southConEl,...
+            obj.demoLocBox = uicontrol(obj.southConEl,...
                 'style','edit',...
                 'String','...',...
                 'Position',[115 50 50 20],...
@@ -115,6 +114,7 @@ classdef BallBalancerView < handle
         function selectFile(obj,src,event)
            [filename, pathname] = uigetfile;
            obj.controllerHandle.setDemoFileName(pathname, filename);
+           %TODO set textbox
         end
             
         

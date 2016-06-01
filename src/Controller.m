@@ -23,6 +23,8 @@ classdef Controller < handle
             %start services (Model gets only data from services)
             obj.servos = Servos();
             obj.model = Model(obj);
+            obj.initDVS();
+            obj.connectDVS();
             %start business logic
             
             %TODO: start view (if useful)
@@ -44,7 +46,7 @@ classdef Controller < handle
         end
         
         function connectDVS(obj)
-           obj.dvs.Connect();
+           obj.dvs.Connect(); 
         end
         
         function Run(obj)
