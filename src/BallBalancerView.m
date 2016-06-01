@@ -28,10 +28,7 @@ classdef BallBalancerView < handle
             
             obj.controllerHandle = con;
             
-            obj.fig = figure('Position',[250 250 700 700],...
-            'MenuBar','none',...
-            'NumberTitle','off',...
-            'Name','Simplematlabgui');
+            obj.fig = figure();
             set(obj.fig,'CloseRequestFcn',@(src,event) onclose(obj,src,event))
             set( gcf, 'toolbar', 'figure' )
             
@@ -41,7 +38,7 @@ classdef BallBalancerView < handle
             axis([0,120,0,120]);
             
             obj.leftConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.8,.65,.15,0.3])
-            obj.southConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.05,.05,.7,0.05])
+            obj.southConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.05,.05,.9,0.07])
             
             %check if demo dvs is used
             demoBox = uicontrol(obj.leftConEl,...
