@@ -8,6 +8,8 @@ classdef DVS128Demo < handle
         serial %serial Port
         demodata
         demodataI
+        path
+        filename
     end %properties
     
     events
@@ -49,12 +51,20 @@ classdef DVS128Demo < handle
             
             % Load file
             %TODO select by Gui
-            obj.demodata = load('C:\Users\Andi\git\github\2DOF-BallBalancer\data\withNewClassStructure\ball1.mat');
+            file = strcat(obj.path, obj.filename); 
+            
+            obj.demodata = load(file);
             obj.demodataI = 1;
             
-            disp('DVS128 start event streaming');            
+            disp(strcat('DVS128 start event streaming from ', file));            
 
         end %connect()
+        
+        function setFileName(obj, path, name)
+           obj.path = path;
+           obj.filename = name;
+           obj.Connect();
+        end
         
         function Reset(obj)
             obj.serial.WriteLine('r');           
@@ -73,6 +83,11 @@ classdef DVS128Demo < handle
             events = [];
             events = obj.demodata.ans.dat{obj.demodataI};
             obj.demodataI = obj.demodataI +1;
+            
+            % reset after last element
+            if obj.demodataI == length(obj.demodata.ans.dat)
+                obj.demodataI = 1;
+            end
         end %GetEvents
         
         function events = EventsAvailable(obj)
