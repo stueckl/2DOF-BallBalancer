@@ -72,8 +72,8 @@ classdef DVS128Demo < handle
         end %reset()
         
         function Close(obj)
-            obj.serial.WriteLine('E-');                     
-            obj.serial.Close();                             
+            %obj.serial.WriteLine('E-');                     
+            %obj.serial.Close();                             
             disp ('COM-Port closed');  
         end %Close()
         

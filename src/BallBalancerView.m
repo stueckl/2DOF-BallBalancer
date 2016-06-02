@@ -106,9 +106,9 @@ classdef BallBalancerView < handle
         end
         
         function onclose(obj,src,event)
-            obj.controllerHandle.stopLoop();
-            delete(src)
-            delete(obj)
+            obj.controllerHandle.Destructor();
+            delete(src);
+            delete(obj);
         end
         
         function selectFile(obj,src,event)

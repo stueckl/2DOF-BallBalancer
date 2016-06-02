@@ -22,18 +22,19 @@ classdef Controller < handle
             obj.useDemoBool = 1;
             
             %start services (Model gets only data from services)
-            obj.servo_x = Servos('com3', 1000000);
-            obj.servo_y = Servos('com4', 1000000);
+            obj.servo_x = Servos('com4', 1000000);
+            obj.servo_y = Servos('com5', 1000000);
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
             %start business logic
             
             %TODO: start view (if useful)
-            obj.view = BallBalancerView(obj);
+            obj.setRandomPos();
             
+            obj.view = BallBalancerView(obj);
             %run programm
-            obj.Run();
+            %obj.Run();
         
             %TODO: clean up
         end
@@ -41,9 +42,9 @@ classdef Controller < handle
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
-                obj.dvs = DVS128Demo('com5', 6000000);
+                obj.dvs = DVS128Demo('com3', 6000000);
             else
-                obj.dvs = DVS128('com5', 6000000);
+                obj.dvs = DVS128('com3', 6000000);
             end
         end
         
@@ -65,7 +66,7 @@ classdef Controller < handle
                     %motor movement
                     
                 end %if obj.dvs.EventsAvailable()
-                pause(0.02)
+                pause(0.2)
             end %while
         end %Run()
             
@@ -99,6 +100,15 @@ classdef Controller < handle
                 obj.dvs.setFileName(path, name);
                 obj.connectDVS();
             end
+        end
+        
+        function setRandomPos(obj)
+            obj.servo_y.SetPosition(2000);
+        end
+        
+        function Destructor(obj)
+            obj.stopLoop();
+            fclose(instrfind);
         end
         
     end %methods 

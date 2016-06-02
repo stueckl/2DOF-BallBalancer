@@ -97,11 +97,10 @@ classdef Servos < handle
         end
         
         % *************************************************************************    
-        % function SerPortCloseAll()                      % close all open ports
-        %     if ~(isempty(instrfind))
-        %         fclose(instrfind);
-        %     end
-        %     delete(instrfindall);
+        function Close(obj)                    
+            fclose(obj.s);                             
+            disp ('COM-Port Servo closed');  
+        end %Close()
         
         
     end %methods
