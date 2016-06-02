@@ -65,7 +65,7 @@ classdef Servos < handle
             % Servos Serial Handler Object
             obj.SerPortOpen()    % open serial port 
 
-            obj.SerPortFlush(obj);
+            %obj.SerPortFlush(obj);
             
         end
 
