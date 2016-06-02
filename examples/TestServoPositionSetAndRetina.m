@@ -17,9 +17,9 @@ CWbin       = 1536;     % 135 Deg
 CCWbin      = 2560;     % 225 Deg
 bin2deg     = (CCWbin - CWbin)/(CCWdeg - CWdeg);
 
-portName_x = 'COM3';
-portName_y = 'COM4';
-portName_r = 'COM5';
+portName_x = 'COM6';
+portName_y = 'COM7';
+portName_r = 'COM8';
 
 % The BaudRate configuration for Servos and for Retina
 baudRateServo   = 1000000;
@@ -36,6 +36,12 @@ SetPosition(s_y, InitPosBin);
 
 SetPosition(s_x, CWbin);
 SetPosition(s_y, CWbin);
+
+
+for i=1500:100:2500
+    SetPosition(s_x, i);
+    pause(1);
+end
 %% The DVS events data
 figure;
 DVSImageMemory = zeros(128,128);        % allocate memory for image

@@ -22,15 +22,29 @@ classdef Controller < handle
             obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
-            obj.servo_x = Servos('com4', 1000000);
-            obj.servo_y = Servos('com5', 1000000);
-            obj.servo_x.SetPosition(2300);
+            
+            
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
+            
+            obj.servo_x = Servos('com7', 1000000);
+            obj.servo_y = Servos('com6', 1000000);
+            
+            for i=1500:100:2500
+                obj.servo_x.SetPosition(i);
+                pause(0.1);
+            end
+            
+            
             %start business logic
             
+            
+            
+            
             %TODO: start view (if useful)
+            
+            
             
             obj.view = BallBalancerView(obj);
             %run programm
@@ -42,9 +56,9 @@ classdef Controller < handle
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
-                obj.dvs = DVS128Demo('com3', 6000000);
+                obj.dvs = DVS128Demo('com8', 6000000);
             else
-                obj.dvs = DVS128('com3', 6000000);
+                obj.dvs = DVS128('com8', 6000000);
             end
         end
         
