@@ -8,7 +8,8 @@ classdef Controller < handle
         dvs % sensor
         useDemoBool
         view % graphical user Interface (run in other thread slow 30-60fps)
-        servos
+        servo_x
+        servo_y
         dat %TODO for test only
     end %events
     
