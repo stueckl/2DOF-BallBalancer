@@ -31,20 +31,11 @@ classdef Controller < handle
             obj.servo_x = Servos('com7', 1000000);
             obj.servo_y = Servos('com6', 1000000);
             
-            for i=1500:100:2500
-                obj.servo_x.SetPosition(i);
-                pause(0.1);
-            end
             
             
             %start business logic
-            
-            
-            
-            
+
             %TODO: start view (if useful)
-            
-            
             
             obj.view = BallBalancerView(obj);
             %run programm
@@ -67,7 +58,13 @@ classdef Controller < handle
         end
         
         function Run(obj)
+            i = 1;
+            dat = cell(100,1);
             while obj.isRunning
+                
+                %obj.servo_x.SetPosition(1500+rand()*1000);
+                %obj.servo_y.SetPosition(1500+rand()*1000);
+                
                 %check for new events
                 %TODO: solve it event based
                 if obj.dvs.EventsAvailable()
@@ -76,32 +73,37 @@ classdef Controller < handle
                     %put them to gui
                     obj.view.update(eventData);
                     %regler
-                    
+                    dat{i} = eventData;
+                    i = i + 1;
                     %motor movement
                     
                 end %if obj.dvs.EventsAvailable()
                 pause(0.2)
             end %while
+            save('noise.mat', 'dat');
         end %Run()
         
         function recordBorder(obj)
-            for j=1:10
-                obj.servo_x.SetPosition(2000);
-                %obj.servo_y.SetPosition(1500+j*100);
-                for i=1:20
+
+            tempEventdataAll = [];
+            for j=0:pi/100:20*pi
+                obj.servo_x.SetPosition(2048+400*cos(j));
+                obj.servo_y.SetPosition(2048+400*sin(j));
+                for i=1:1
                     if obj.dvs.EventsAvailable()
                         eventData =  obj.dvs.GetEvents();
                         %put them in filter & position calculation
                         %put them to gui
                         obj.view.update(eventData);
                         %regler
-
+                        tempEventdataAll = vertcat(tempEventdataAll, eventData);
                         %motor movement
 
                     end %if obj.dvs.EventsAvailable()
-                    pause(0.1)
+                    pause(0.001)
                 end
             end %while
+            save('recodedBorder.mat', 'tempEventdataAll');
         end %recordBorder()
         
         
