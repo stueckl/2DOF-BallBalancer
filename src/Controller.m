@@ -19,18 +19,18 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 1;
+            obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
             obj.servo_x = Servos('com4', 1000000);
             obj.servo_y = Servos('com5', 1000000);
+            obj.servo_x.SetPosition(2300);
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
             %start business logic
             
             %TODO: start view (if useful)
-            obj.setRandomPos();
             
             obj.view = BallBalancerView(obj);
             %run programm
@@ -69,6 +69,28 @@ classdef Controller < handle
                 pause(0.2)
             end %while
         end %Run()
+        
+        function recordBorder(obj)
+            for j=1:10
+                obj.servo_x.SetPosition(2000);
+                %obj.servo_y.SetPosition(1500+j*100);
+                for i=1:20
+                    if obj.dvs.EventsAvailable()
+                        eventData =  obj.dvs.GetEvents();
+                        %put them in filter & position calculation
+                        %put them to gui
+                        obj.view.update(eventData);
+                        %regler
+
+                        %motor movement
+
+                    end %if obj.dvs.EventsAvailable()
+                    pause(0.1)
+                end
+            end %while
+        end %recordBorder()
+        
+        
             
         function startLoop(obj)
            if obj.isRunning == 1

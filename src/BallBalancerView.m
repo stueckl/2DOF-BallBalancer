@@ -82,6 +82,13 @@ classdef BallBalancerView < handle
                'Callback',@(handle,event) stopLoop(obj,handle,event),...
                'Tag','startLoop');
            
+            %button stop Main Loop        
+            startBorderCap = uicontrol(obj.leftConEl,...
+                'String','Capture Border',...
+               'Position',[115 50 50 20],...
+               'Callback',@(handle,event) captureBorder(obj,handle,event),...
+               'Tag','startLoop');
+           
         end
         
         function connectDVS(obj,handle,event)
@@ -95,6 +102,11 @@ classdef BallBalancerView < handle
         
         function stopLoop(obj, src, event)
             obj.controllerHandle.stopLoop();
+        end
+        
+        function captureBorder(obj,handle,event)
+            instrfind
+            obj.controllerHandle.recordBorder(); 
         end
         
         function use_demo(obj, src, event)
