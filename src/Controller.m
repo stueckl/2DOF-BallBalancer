@@ -21,7 +21,8 @@ classdef Controller < handle
             obj.useDemoBool = 1;
             
             %start services (Model gets only data from services)
-            obj.servos = Servos();
+            obj.servo_x = Servos('com3', 1000000);
+            obj.servo_y = Servos('com4', 1000000);
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
