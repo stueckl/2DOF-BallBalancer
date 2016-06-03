@@ -21,9 +21,9 @@ classdef BallBalancerView < handle
             col = zeros(size(events,1), 3);
             col(:,1) = events(:,3);
             obj.plt.CData = col;
-            %scattersize = ones(size(events,1), 1);
-            %scattersize(end) = 50;
-            %obj.plt.SizeData = scattersize;
+%             scattersize = ones(size(events,1), 1);
+%             scattersize(end) = 50;
+%             obj.plt.SizeData = scattersize;
         end %Update()
         
         function obj = BallBalancerView(con)

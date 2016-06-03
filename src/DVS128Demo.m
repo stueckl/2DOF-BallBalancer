@@ -71,7 +71,6 @@ classdef DVS128Demo < handle
         function filteredData = CircularFilter(obj, filter1Data)
             %To Do: check radius and center of circle
             x = filter1Data(:, 1);
-            disp(x);
             y = filter1Data(:, 2);
             filteredData = filter1Data((x - 60).^2+(y - 60).^2<52^2, :);
         end %CircularFilter()
@@ -79,9 +78,20 @@ classdef DVS128Demo < handle
         
         function ballPos = DetermineBallPosition(obj, filteredData)
             %ToDo DBSCAN cluster center?
-            x = mean(filteredData(:,1));
-            y = mean(filteredData(:,2));
-            ballPos = [x, y];
+            
+            epsilon=2;
+            MinPts=10;
+            A=filteredData(filteredData(:,3)==1, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos   = mean(A(IDX==clusterNumb, :));
+            
+            %probably useful for velocity
+%             epsilon=6;
+%             MinPts=10;
+%             A=filteredData(:, 1:2);
+%             IDX=DBSCAN(A,epsilon,MinPts);
+            
         end % DetermineBallPosition()
                 
         

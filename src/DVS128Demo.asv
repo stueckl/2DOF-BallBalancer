@@ -69,15 +69,28 @@ classdef DVS128Demo < handle
         end %EventFlashFilter()
         
         function filteredData = CircularFilter(obj, filter1Data)
+            %To Do: check radius and center of circle
             x = filter1Data(:, 1);
-            disp(x);
             y = filter1Data(:, 2);
-            filteredData = filter1Data((x - 60).^2+(y - 60).^2<200, :);
+            filteredData = filter1Data((x - 60).^2+(y - 60).^2<52^2, :);
         end %CircularFilter()
         
         
         function ballPos = DetermineBallPosition(obj, filteredData)
             %ToDo DBSCAN cluster center?
+            
+            epsilon=2;
+            MinPts=10;
+            A=filteredData(filteredData(:,3)==1, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode
+            
+            epsilon=6;
+            MinPts=10;
+            A=filteredData(:, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            
+            
             x = mean(filteredData(:,1));
             y = mean(filteredData(:,2));
             ballPos = [x, y];

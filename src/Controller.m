@@ -73,8 +73,8 @@ classdef Controller < handle
                     filteredData = obj.dvs.DataFilter(eventData);
                     %position calculation
                     ballPos = obj.dvs.DetermineBallPosition(filteredData);
-                    
-                    filteredData(end+1, :) = [ballPos(1), ballPos(2), 3, 0];
+                    disp(ballPos)
+                    filteredData(end+1, :) = [ballPos(1), ballPos(2), 9, 0];
                     %put them to gui
                     obj.view.update(filteredData);
                     %regler
@@ -151,7 +151,10 @@ classdef Controller < handle
         
         function Destructor(obj)
             obj.stopLoop();
-            fclose(instrfind);
+            if ~isequal(instrfind, [])
+                fclose(instrfind);
+            end
+            
         end
         
     end %methods 
