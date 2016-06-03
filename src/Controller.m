@@ -19,7 +19,7 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 0;
+            obj.useDemoBool = 1;
             
             %start services (Model gets only data from services)
             
@@ -27,10 +27,10 @@ classdef Controller < handle
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
-            
-            obj.servo_x = Servos('com7', 1000000);
-            obj.servo_y = Servos('com6', 1000000);
-            
+            if obj.useDemoBool == 0 
+                obj.servo_x = Servos('com7', 1000000);
+                obj.servo_y = Servos('com6', 1000000);
+            end
             
             
             %start business logic

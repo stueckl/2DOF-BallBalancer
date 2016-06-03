@@ -1,6 +1,9 @@
 TODO: (search for additional TODO's in files)!
-add Motor control
+
 add calculation Position from DVS events
 -filter eventflash
 -filter circular region
+
 fill model with code
+
+automatically detect port numbers

@@ -48,13 +48,13 @@ classdef DVS128Demo < handle
             %obj.serial.Read(3);     
             
             % Load file
-            file = load('settings.mat');
+            file = load('recordedData.mat');
             disp(file)
 
-            obj.demodata = load(file.filename);
+            obj.demodata = file.dat;
             obj.demodataI = 1;
             
-            disp(strcat('DVS128 start event streaming from: ', file.filename));            
+            %disp(strcat('DVS128 start event streaming from: ', file.dat));            
 
         end %connect()
         
@@ -79,17 +79,17 @@ classdef DVS128Demo < handle
         
         function events = GetEvents(obj)  % get n events (=4*n bytes) from sensor
             events = [];
-            events = obj.demodata.ans.dat{obj.demodataI};
+            events = obj.demodata{obj.demodataI};
             obj.demodataI = obj.demodataI +1;
             
             % reset after last element
-            if obj.demodataI == length(obj.demodata.ans.dat)
+            if obj.demodataI == size(obj.demodata, 1)
                 obj.demodataI = 1;
             end
         end %GetEvents
         
         function events = EventsAvailable(obj)
-            a = size(obj.demodata.ans.dat);
+            a = size(obj.demodata);%.ans.dat);
             events = 0;
             if obj.demodataI < a(1)
                 events = 1;
