@@ -69,11 +69,10 @@ classdef DVS128Demo < handle
         end %EventFlashFilter()
         
         function filteredData = CircularFilter(obj, filter1Data)
-            %To Do: check radius and center of circle
             x = filter1Data(:, 1);
             disp(x);
             y = filter1Data(:, 2);
-            filteredData = filter1Data((x - 60).^2+(y - 60).^2<52^2, :);
+            filteredData = filter1Data((x - 60).^2+(y - 60).^2<200, :);
         end %CircularFilter()
         
         

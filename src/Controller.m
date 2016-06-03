@@ -69,9 +69,14 @@ classdef Controller < handle
                 %TODO: solve it event based
                 if obj.dvs.EventsAvailable()
                     eventData =  obj.dvs.GetEvents();
-                    %put them in filter & position calculation
+                    %put them in filter 
+                    filteredData = obj.dvs.DataFilter(eventData);
+                    %position calculation
+                    ballPos = obj.dvs.DetermineBallPosition(filteredData);
+                    
+                    filteredData(end+1, :) = [ballPos(1), ballPos(2), 3, 0];
                     %put them to gui
-                    obj.view.update(eventData);
+                    obj.view.update(filteredData);
                     %regler
                     dat{i} = eventData;
                     i = i + 1;
