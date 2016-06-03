@@ -61,31 +61,35 @@ classdef Controller < handle
             i = 1;
             dat = cell(100,1);
             while obj.isRunning
-                
-                %obj.servo_x.SetPosition(1500+rand()*1000);
-                %obj.servo_y.SetPosition(1500+rand()*1000);
-                
+                           
                 %check for new events
                 %TODO: solve it event based
                 if obj.dvs.EventsAvailable()
                     eventData =  obj.dvs.GetEvents();
                     %put them in filter 
                     filteredData = obj.dvs.DataFilter(eventData);
-                    %position calculation
-                    ballPos = obj.dvs.DetermineBallPosition(filteredData);
-                    disp(ballPos)
-                    filteredData(end+1, :) = [ballPos(1), ballPos(2), 9, 0];
+                    %position calculation and first simple velocity 
+                    [ballPos, ballVel] = obj.dvs.DetermineBallPosition(filteredData);
+                    
                     %put them to gui
-                    obj.view.update(filteredData);
+                    obj.view.update(filteredData, ballPos, 10*ballVel);
+                    
                     %regler
+                    %To do: determine Kp Kd so that angVal is in [-500, 500]                
+                    angVal = 9*(ballPos - 60) + 43*(ballVel);
+                    
+                    %motor movement
+                    if ( (obj.useDemoBool == 0) & (abs(angVal(1)) < 500) & (abs(angVal(2)) < 500) )
+                        obj.servo_x.SetPosition(2048+angVal(1));
+                        obj.servo_y.SetPosition(2048+angVal(1));
+                    end
+                    
                     dat{i} = eventData;
                     i = i + 1;
-                    %motor movement
-                    
                 end %if obj.dvs.EventsAvailable()
                 pause(0.2)
             end %while
-            save('noise.mat', 'dat');
+            save('lastRun.mat', 'dat');
         end %Run()
         
         function recordBorder(obj)

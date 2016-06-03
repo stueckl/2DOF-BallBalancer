@@ -7,6 +7,7 @@ classdef BallBalancerView < handle
         fig
         axes
         plt
+        plt2
         leftConEl
         southConEl
         demoLocBox
@@ -15,12 +16,18 @@ classdef BallBalancerView < handle
     methods
         
         %updates the plot with new event data
-        function update(obj, events)
+        function update(obj, events, pos, vel)
             obj.plt.XData = events(:,1);
             obj.plt.YData = events(:,2);
             col = zeros(size(events,1), 3);
             col(:,1) = events(:,3);
             obj.plt.CData = col;
+            
+            obj.plt2.XData =pos(1);
+            obj.plt2.YData =pos(2);
+            obj.plt2.UData =vel(1);
+            obj.plt2.VData =vel(2);
+            %To display calculated position (slow!!!)
 %             scattersize = ones(size(events,1), 1);
 %             scattersize(end) = 50;
 %             obj.plt.SizeData = scattersize;
@@ -37,6 +44,8 @@ classdef BallBalancerView < handle
             obj.axes = axes('Parent',obj.fig,'Units','norm','Position',[.05,.25,.7,0.7]);
             axes(obj.axes);
             obj.plt = scatter([0,1],[0,1], 7, [1,0,0]);
+            hold on;
+            obj.plt2 = quiver(0, 0, 1, 1);
             axis([0,120,0,120]);
             
             obj.leftConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.8,.65,.15,0.3])

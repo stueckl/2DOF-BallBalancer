@@ -1,6 +1,6 @@
 TODO: (search for additional TODO's in files)!
 
-add calculation Position from DVS events
+add Kalman in calculation of Position from DVS events
 -filter eventflash
 
 

@@ -76,7 +76,7 @@ classdef DVS128Demo < handle
         end %CircularFilter()
         
         
-        function ballPos = DetermineBallPosition(obj, filteredData)
+        function [ballPos, ballVel] = DetermineBallPosition(obj, filteredData)
             %ToDo DBSCAN cluster center?
             
             epsilon=2;
@@ -86,11 +86,13 @@ classdef DVS128Demo < handle
             clusterNumb = mode(IDX);
             ballPos   = mean(A(IDX==clusterNumb, :));
             
-            %probably useful for velocity
-%             epsilon=6;
-%             MinPts=10;
-%             A=filteredData(:, 1:2);
-%             IDX=DBSCAN(A,epsilon,MinPts);
+            epsilon=6;
+            MinPts=10;
+            A=filteredData(:, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos1   = mean(A(IDX==clusterNumb, :));
+            ballVel = ballPos - ballPos1;
             
         end % DetermineBallPosition()
                 
