@@ -23,14 +23,14 @@ classdef Controller < handle
             obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
-            obj.comPorts = {'com3', 'com7', 'com8'}
+            obj.comPorts = getAvailableComPort();
             
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
             if obj.useDemoBool == 0 
-                obj.servo_x = Servos(obj.comPorts{2}, 1000000);
-                obj.servo_y = Servos(obj.comPorts{3}, 1000000);
+                obj.servo_x = Servos(obj.comPorts(3), 1000000);
+                obj.servo_y = Servos(obj.comPorts(2), 1000000);
             end
             
             
@@ -48,9 +48,9 @@ classdef Controller < handle
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
-                obj.dvs = DVS128Demo(obj.comPorts{1}, 6000000);
+                obj.dvs = DVS128Demo(obj.comPorts(1), 6000000);
             else
-                obj.dvs = DVS128(obj.comPorts{1}, 6000000);
+                obj.dvs = DVS128(obj.comPorts(1), 6000000);
             end
         end
         
@@ -65,32 +65,43 @@ classdef Controller < handle
                            
                 %check for new events
                 %TODO: solve it event based
-                if obj.dvs.EventsAvailable()
-                    eventData =  obj.dvs.GetEvents();
-                    %put them in filter 
-                    filteredData = obj.dvs.DataFilter(eventData);
-                    %position calculation and first simple velocity 
-                    [ballPos, ballVel] = obj.dvs.DetermineBallPosition(filteredData);
-                    
-                    %put them to gui
-                    obj.view.update(filteredData, ballPos, 10*ballVel);
-                    
-                    %regler
-                    %To do: determine Kp Kd so that angVal is in [-500, 500]                
-                    angVal = 9*(ballPos - 60) + 43*(ballVel);
-                    
-                    %motor movement
-                    if ( (obj.useDemoBool == 0) & (abs(angVal(1)) < 500) & (abs(angVal(2)) < 500) )
-                        obj.servo_x.SetPosition(2048+angVal(1));
-                        obj.servo_y.SetPosition(2048+angVal(1));
+                eventcount = obj.dvs.EventsAvailable();
+                if eventcount
+                    if eventcount < 100
+                        eventData =  obj.dvs.GetEvents();
+                        %put them in filter 
+                        filteredData = obj.dvs.DataFilter(eventData);
+                        %position calculation and first simple velocity 
+                        [ballPos, ballVel] = obj.dvs.DetermineBallPosition(filteredData);
+
+
+
+                        %regler
+                        %To do: determine Kp Kd so that angVal is in [-500, 500]                
+                        angVal = 9*(ballPos - 60) + 40*(ballVel);
+
+                        %motor movement
+                        if ( (length(angVal)<2) || (length(ballPos)<2) )
+                            disp(angVal)
+
+                        elseif ( (obj.useDemoBool == 0) & (abs(angVal(1)) < 500) & (abs(angVal(2)) < 500) )
+                            %put them to gui
+                            obj.view.update(filteredData, ballPos, 10*ballVel);
+
+                            obj.servo_x.SetPosition(2048+angVal(1));
+                            obj.servo_y.SetPosition(2048-angVal(2));
+                        end
+
+    %                     dat{i} = eventData;
+    %                     i = i + 1;
+                    else
+                        %drop events, if to many
+                        eventData =  obj.dvs.GetEvents();
                     end
-                    
-                    dat{i} = eventData;
-                    i = i + 1;
                 end %if obj.dvs.EventsAvailable()
-                pause(0.2)
+                pause(0)
             end %while
-            save('lastRun.mat', 'dat');
+%             save('lastRun.mat', 'dat');
         end %Run()
         
         function recordBorder(obj)
