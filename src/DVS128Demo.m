@@ -8,8 +8,6 @@ classdef DVS128Demo < handle
         serial %serial Port
         demodata
         demodataI
-        path
-        filename
     end %properties
     
     events
@@ -50,19 +48,58 @@ classdef DVS128Demo < handle
             %obj.serial.Read(3);     
             
             % Load file
-            %TODO select by Gui
-            file = strcat(obj.path, obj.filename); 
-            
-            obj.demodata = load(file);
+            file = load('recordedData.mat');
+            disp(file)
+
+            obj.demodata = file.dat;
             obj.demodataI = 1;
             
-            disp(strcat('DVS128 start event streaming from ', file));            
+            %disp(strcat('DVS128 start event streaming from: ', file.dat));            
 
         end %connect()
         
+        function filteredData = DataFilter(obj, eventData)
+            filter1Data = obj.EventFlashFilter(eventData);
+            filteredData = obj.CircularFilter(filter1Data);
+        end %DataFilter()
+        
+        function filter1Data = EventFlashFilter(obj, eventData)
+            %TO DO: filter all when there are events everywhere
+            filter1Data = eventData;
+        end %EventFlashFilter()
+        
+        function filteredData = CircularFilter(obj, filter1Data)
+            %To Do: check radius and center of circle
+            x = filter1Data(:, 1);
+            y = filter1Data(:, 2);
+            filteredData = filter1Data((x - 60).^2+(y - 60).^2<52^2, :);
+        end %CircularFilter()
+        
+        
+        function [ballPos, ballVel] = DetermineBallPosition(obj, filteredData)
+            %ToDo DBSCAN cluster center?
+            
+            epsilon=2;
+            MinPts=10;
+            A=filteredData(filteredData(:,3)==1, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos   = mean(A(IDX==clusterNumb, :));
+            
+            epsilon=6;
+            MinPts=10;
+            A=filteredData(:, 1:2);
+            IDX=DBSCAN(A,epsilon,MinPts);
+            clusterNumb = mode(IDX);
+            ballPos1   = mean(A(IDX==clusterNumb, :));
+            ballVel = ballPos - ballPos1;
+            
+        end % DetermineBallPosition()
+                
+        
         function setFileName(obj, path, name)
-           obj.path = path;
-           obj.filename = name;
+           filename = strcat([path, name]);
+           save('settings.mat', 'filename');
            obj.Connect();
         end
         
@@ -74,24 +111,24 @@ classdef DVS128Demo < handle
         end %reset()
         
         function Close(obj)
-            obj.serial.WriteLine('E-');                     
-            obj.serial.Close();                             
+            %obj.serial.WriteLine('E-');                     
+            %obj.serial.Close();                             
             disp ('COM-Port closed');  
         end %Close()
         
         function events = GetEvents(obj)  % get n events (=4*n bytes) from sensor
             events = [];
-            events = obj.demodata.ans.dat{obj.demodataI};
+            events = obj.demodata{obj.demodataI};
             obj.demodataI = obj.demodataI +1;
             
             % reset after last element
-            if obj.demodataI == length(obj.demodata.ans.dat)
+            if obj.demodataI == size(obj.demodata, 1)
                 obj.demodataI = 1;
             end
         end %GetEvents
         
         function events = EventsAvailable(obj)
-            a = size(obj.demodata.ans.dat);
+            a = size(obj.demodata);%.ans.dat);
             events = 0;
             if obj.demodataI < a(1)
                 events = 1;
