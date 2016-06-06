@@ -11,6 +11,7 @@ classdef Controller < handle
         servo_x
         servo_y
         dat %TODO for test only
+        comPorts
     end %events
     
     methods
@@ -19,17 +20,17 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 1;
+            obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
-            
+            obj.comPorts = {'com3', 'com7', 'com8'}
             
             obj.model = Model(obj);
             obj.initDVS();
             obj.connectDVS();
             if obj.useDemoBool == 0 
-                obj.servo_x = Servos('com7', 1000000);
-                obj.servo_y = Servos('com6', 1000000);
+                obj.servo_x = Servos(obj.comPorts{2}, 1000000);
+                obj.servo_y = Servos(obj.comPorts{3}, 1000000);
             end
             
             
@@ -47,9 +48,9 @@ classdef Controller < handle
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
-                obj.dvs = DVS128Demo('com8', 6000000);
+                obj.dvs = DVS128Demo(obj.comPorts{1}, 6000000);
             else
-                obj.dvs = DVS128('com8', 6000000);
+                obj.dvs = DVS128(obj.comPorts{1}, 6000000);
             end
         end
         
