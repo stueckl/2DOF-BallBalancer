@@ -10,7 +10,6 @@ classdef Controller < handle
         view % graphical user Interface (run in other thread slow 30-60fps)
         servo_x
         servo_y
-        dat %TODO for test only
         comPorts
     end %events
     
@@ -20,86 +19,80 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 0;
+            obj.useDemoBool = 1;
             
             %start services (Model gets only data from services)
-            obj.comPorts = getAvailableComPort();
+            SerialPort.CloseAll();
+            obj.comPorts = SerialPort.getAvailableComPort();
             
+            disp(obj.comPorts)
+            %start business logic         
             obj.model = Model(obj);
             obj.initDVS();
-            obj.connectDVS();
+            obj.dvs.Connect();
             if obj.useDemoBool == 0 
-                obj.servo_x = Servos(obj.comPorts(3), 1000000);
-                obj.servo_y = Servos(obj.comPorts(2), 1000000);
+                obj.servo_x = Servos(obj.comPorts(2), 1000000);
+                obj.servo_y = Servos(obj.comPorts(1), 1000000);
             end
-            
-            
-            %start business logic
-
+                     
             %TODO: start view (if useful)
             
             obj.view = BallBalancerView(obj);
-            %run programm
-            %obj.Run();
-        
-            %TODO: clean up
+            tic
         end
         
+        %TODO: Put into clean abstract class ofr DVSs
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
                 obj.dvs = DVS128Demo(obj.comPorts(1), 6000000);
             else
-                obj.dvs = DVS128(obj.comPorts(1), 6000000);
+                obj.dvs = DVS128(obj.comPorts(3), 6000000);
             end
         end
         
-        function connectDVS(obj)
-           obj.dvs.Connect(); 
-        end
         
+        %TODO: put into model
+        function OnNewEvent(obj,eventcount)
+            
+            %overload function
+            %if nargin < 1
+            %    eventcount = obj.dvs.EventsAvailable();
+            %end %nargin ==1
+            
+            %get events (function is only called if there are new events)
+            %position and velocity
+            
+            %logic
+            obj.model.OnNewEvent(obj.dvs.GetEvents());
+            
+            %move servo
+            if (obj.useDemoBool == 0)
+                obj.servo_x.SetPosition(obj.model.GetServoPositionX());
+                obj.servo_y.SetPosition(obj.model.GetServoPositionY());
+            else
+                %disp(['x position:' obj.model.GetServoPositionX()])
+                %disp(['y posotion:' obj.model.GetServoPositionY()])
+            end %(obj.useDemoBool == 0)
+            
+        end % OnNewEvent
         function Run(obj)
-            i = 1;
-            dat = cell(100,1);
+            time = 0;
             while obj.isRunning
-                           
+                disp(toc - time);
+                time = toc;
+          
+                %check for new events
+                %if new events calculate
+                %
                 %check for new events
                 %TODO: solve it event based
-                eventcount = obj.dvs.EventsAvailable();
-                if eventcount
-                    if eventcount < 100
-                        eventData =  obj.dvs.GetEvents();
-                        %put them in filter 
-                        filteredData = obj.dvs.DataFilter(eventData);
-                        %position calculation and first simple velocity 
-                        [ballPos, ballVel] = obj.dvs.DetermineBallPosition(filteredData);
-
-
-
-                        %regler
-                        %To do: determine Kp Kd so that angVal is in [-500, 500]                
-                        angVal = 9*(ballPos - 60) + 40*(ballVel);
-
-                        %motor movement
-                        if ( (length(angVal)<2) || (length(ballPos)<2) )
-                            disp(angVal)
-
-                        elseif ( (obj.useDemoBool == 0) & (abs(angVal(1)) < 500) & (abs(angVal(2)) < 500) )
-                            %put them to gui
-                            obj.view.update(filteredData, ballPos, 10*ballVel);
-
-                            obj.servo_x.SetPosition(2048+angVal(1));
-                            obj.servo_y.SetPosition(2048-angVal(2));
-                        end
-
-    %                     dat{i} = eventData;
-    %                     i = i + 1;
-                    else
-                        %drop events, if to many
-                        eventData =  obj.dvs.GetEvents();
-                    end
+                if obj.dvs.EventsAvailable()
+                        %calculate model
+                        obj.OnNewEvent();                        
+                        
                 end %if obj.dvs.EventsAvailable()
-                pause(0)
+                pause(0);
             end %while
 %             save('lastRun.mat', 'dat');
         end %Run()

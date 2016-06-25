@@ -48,8 +48,8 @@ classdef BallBalancerView < handle
             obj.plt2 = quiver(0, 0, 1, 1);
             axis([0,120,0,120]);
             
-            obj.leftConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.8,.65,.15,0.3])
-            obj.southConEl = uiflowcontainer(obj.fig,'Units','norm','Position',[.05,.05,.9,0.07])
+            obj.leftConEl = uiflowcontainer('v0', obj.fig, 'Units','norm','Position',[.8,.65,.15,0.3]);
+            obj.southConEl = uiflowcontainer('v0', obj.fig, 'Units','norm','Position',[.05,.05,.9,0.07]);
             
             %check if demo dvs is used
             demoBox = uicontrol(obj.leftConEl,...
