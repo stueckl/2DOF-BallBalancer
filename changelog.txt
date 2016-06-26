@@ -1,9 +1,16 @@
 TODO: (search for additional TODO's in files)!
 
-add Kalman in calculation of Position from DVS events
--filter eventflash
+
+Abstrakte klasse für DVS
+DBSCAN in klasse
+
+What does record Border do?
+
+Praktikum:
+Add reinforcment learning algorithm
 
 
-fill model with code
-
-automatically detect port numbers
+Done:
+- Removed unnecessery Output
+- get filter out of dvs
+- fill model with code

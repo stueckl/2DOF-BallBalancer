@@ -8,6 +8,7 @@ classdef DVS128Demo < handle
         serial %serial Port
         demodata
         demodataI
+        DemoStep4Step
     end %properties
     
     events
@@ -20,6 +21,7 @@ classdef DVS128Demo < handle
         function obj = DVS128Demo(pN, bR)
             
             %set USB-Port configuration
+            obj.DemoStep4Step = 0;
             obj.baudRate = bR;
             obj.portName = pN;
         end %function DVS128()
@@ -48,53 +50,15 @@ classdef DVS128Demo < handle
             %obj.serial.Read(3);     
             
             % Load file
-            file = load('recordedData3.mat');
-            disp(file)
+            filename = 'recordedData2.mat';
+            file = load(filename);
 
             obj.demodata = file.dat;
             obj.demodataI = 1;
             
-            %disp(strcat('DVS128 start event streaming from: ', file.dat));            
+            disp(['DVS128 start event streaming from: ', filename]);            
 
         end %connect()
-        
-        function filteredData = DataFilter(obj, eventData)
-            filter1Data = obj.EventFlashFilter(eventData);
-            filteredData = obj.CircularFilter(filter1Data);
-        end %DataFilter()
-        
-        function filter1Data = EventFlashFilter(obj, eventData)
-            %TO DO: filter all when there are events everywhere
-            filter1Data = eventData;
-        end %EventFlashFilter()
-        
-        function filteredData = CircularFilter(obj, filter1Data)
-            %To Do: check radius and center of circle
-            x = filter1Data(:, 1);
-            y = filter1Data(:, 2);
-            filteredData = filter1Data((x - 60).^2+(y - 60).^2<52^2, :);
-        end %CircularFilter()
-        
-        
-        function [ballPos, ballVel] = DetermineBallPosition(obj, filteredData)
-            %ToDo DBSCAN cluster center?
-            
-            epsilon=2;
-            MinPts=10;
-            A=filteredData(filteredData(:,3)==1, 1:2);
-            IDX=DBSCAN(A,epsilon,MinPts);
-            clusterNumb = mode(IDX);
-            ballPos   = mean(A(IDX==clusterNumb, :));
-            
-            epsilon=6;
-            MinPts=10;
-            A=filteredData(:, 1:2);
-            IDX=DBSCAN(A,epsilon,MinPts);
-            clusterNumb = mode(IDX);
-            ballPos1   = mean(A(IDX==clusterNumb, :));
-            ballVel = ballPos - ballPos1;
-            
-        end % DetermineBallPosition()
                 
         
         function setFileName(obj, path, name)
@@ -117,6 +81,9 @@ classdef DVS128Demo < handle
         end %Close()
         
         function events = GetEvents(obj)  % get n events (=4*n bytes) from sensor
+            if obj.DemoStep4Step
+                pause;
+            end % DemoStep4Step()
             events = [];
             events = obj.demodata{obj.demodataI};
             obj.demodataI = obj.demodataI +1;
@@ -128,11 +95,8 @@ classdef DVS128Demo < handle
         end %GetEvents
         
         function events = EventsAvailable(obj)
-            a = size(obj.demodata);%.ans.dat);
-            events = 0;
-            if obj.demodataI < a(1)
-                events = 1;
-            end
+            a = size(obj.demodata{obj.demodataI});%.ans.dat);
+            events = a(1);
             
         end %EventsAvailable
 
