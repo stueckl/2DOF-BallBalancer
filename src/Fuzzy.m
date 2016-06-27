@@ -14,6 +14,7 @@ classdef Fuzzy < handle
         maxPos
         minVel
         maxVel
+        states
     end %properties
     
     methods
@@ -21,8 +22,8 @@ classdef Fuzzy < handle
         function obj = Fuzzy()
             
             % all settings here
-            obj.numPosStates = 3;
-            obj.numVelStates = 3;
+            obj.numPosStates = 6;
+            obj.numVelStates = 10;
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
@@ -33,14 +34,16 @@ classdef Fuzzy < handle
             obj.velPercOneState = 0;
             % end settings
            
+            obj.states = obj.createStates()
             
-            obj.getStates()
+            %To DO: Delete the following line
+            obj.calculate([0;1],[-3;2])
             
-            obj.calculate()
+            
         end %Fuzzy
         
         
-        function names = getStates(obj)
+        function names = createStates(obj)
             posName = ['posHorz'; 'posVert'];
             velName = ['velHorz'; 'velVert'];
             
@@ -50,11 +53,23 @@ classdef Fuzzy < handle
             multipleVelName = padarray(velName, obj.numVelStates-1, 'replicate', 'both');
             velNumbers = [1:obj.numVelStates, 1:obj.numVelStates]';
             
-            names = [multiplePosName, num2str(posNumbers); multipleVelName, num2str(velNumbers)];
+            names = strtrim([num2cell([multiplePosName, num2str(posNumbers, '%-1d ')],2); ...
+                     num2cell([multipleVelName, num2str(velNumbers, '%-1d ')],2)]);
         end %getStates
         
         
         function percentages = calculate(obj, position, velocity)
+            
+            if ( ( position(1)<obj.minPos(1) ) || ( position(2)<obj.minPos(2) ) || ...
+                 ( position(1)>obj.maxPos(1) ) || ( position(2)>obj.maxPos(2) ) || ...
+                 ( velocity(1)<obj.minVel(1) ) || ( velocity(2)<obj.minVel(2) ) || ...
+                 ( velocity(1)>obj.maxVel(1) ) || ( velocity(2)>obj.maxVel(2) ) )
+                
+                msg = 'Position or Velocity outside of expected interval. Change the minPos ... maxVel Properties of Fuzzy.';
+                error(msg)
+            end
+            
+                
             obj.pos = (position-obj.minPos)/(obj.maxPos-obj.minPos);
             obj.vel = (velocity-obj.minVel)/(obj.maxVel-obj.minVel);
             
