@@ -54,10 +54,7 @@ classdef Fuzzy < handle
         end %getStates
         
         
-        function percentages = calculate(obj, position, velocity)
-            obj.pos = (position-obj.minPos)/(obj.maxPos-obj.minPos);
-            obj.vel = (velocity-obj.minVel)/(obj.maxVel-obj.minVel);
-            
+        function percentages = calculate(obj)
             percentages = zeros(2*obj.numPosStates+2*obj.numVelStates,1);
             j=1;
             for i=1:obj.numPosStates
