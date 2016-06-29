@@ -79,8 +79,9 @@ classdef Controller < handle
         function Run(obj)
             time = 0;
             while obj.isRunning
-                disp(toc - time);
-                time = toc;
+                %DEBUG: display time needed for loop
+                %disp(toc - time);
+                %time = toc;
           
                 %check for new events
                 %if new events calculate

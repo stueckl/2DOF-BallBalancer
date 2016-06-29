@@ -50,7 +50,7 @@ classdef DVS128Demo < handle
             %obj.serial.Read(3);     
             
             % Load file
-            filename = 'recordedData2.mat';
+            filename = 'recordedData3.mat';
             file = load(filename);
 
             obj.demodata = file.dat;

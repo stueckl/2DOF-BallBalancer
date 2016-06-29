@@ -12,6 +12,7 @@ classdef Model < handle
         ballPos
         ballVel
         angVal
+        neuralFuzzyController
         
     end %properties
     
@@ -22,6 +23,7 @@ classdef Model < handle
             obj.buffer = BufferRing(75);
             obj.ServoPositionX = 0;
             obj.ServoPositionY = 0;
+            obj.neuralFuzzyController = NeuralFuzzyController();
         end %Model
         
         function OnNewEvent(obj, Events)
@@ -30,9 +32,11 @@ classdef Model < handle
             %position calculation and first simple velocity 
             [obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
             
-            %regler
-            %To do: determine Kp Kd so that angVal is in [-500, 500]                
-            obj.angVal = 9*(obj.ballPos - 60) + 40*(obj.ballVel);
+            %regler, choose one              
+            obj.PDController();
+            %disp(obj.angVal);
+            obj.NeuralFuzzyController();
+            %disp(obj.angVal);
             
            %calculate motor movement
             if ( (length(obj.angVal)<2) || (length(obj.ballPos)<2) )
@@ -44,7 +48,7 @@ classdef Model < handle
 
                 obj.ServoPositionX = 2048+obj.angVal(1);
                 obj.ServoPositionY = 2048-obj.angVal(2);
-            end
+            end           
             
         end %OnNewEvent()
         
@@ -55,6 +59,15 @@ classdef Model < handle
         function positionY = GetServoPositionY(obj)
             positionY = obj.ServoPositionY;
         end %GetServoPositionX()
+        
+        function PDController(obj)
+            obj.angVal = 9*(obj.ballPos - 60) + 40*(obj.ballVel);
+        end
+        
+        function NeuralFuzzyController(obj) 
+            obj.angVal = obj.neuralFuzzyController.Calculate(obj.ballPos, obj.ballVel);
+        end                     
+            
     end %methods
     
     

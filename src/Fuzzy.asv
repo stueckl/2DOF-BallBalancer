@@ -39,19 +39,19 @@ classdef Fuzzy < handle
             
         end %Fuzzy
         
-        function count = GetNumStatesPerVariable(obj)
+        function diffstates = GetNumStatesPerVariable(obj)
             %TODO: Not best solution
-            diffstates = obj.GetDiffStates();
-            num = size(diffstates);
-            count = zeros(num(1),1);
+            diffstates = ['posHorz' '0';
+                'posVert', 0;
+                'velHorz', 0;
+                'velVert', 0];
             %iterate States
             for n = 1:length(obj.states)
                 %iterate different states. search for hits
-                for j = 1:num(1)
-                    str = strrep(obj.states(n),diffstates(j,:),'');
-                    if  ~strcmp(obj.states(n),str)
-                       count(j) = count(j) + 1; 
-                    end
+                for j = 1:(length(diffstates)/2)
+                    diffstates(j,:)
+                    compstr = strrep(obj.states(n),diffstates(j,1),'');
+                    %if 
                     %diffstates(j,2) = [posName(1,:) , strrep(states(n),posName(1,:),'')];
                     %end
                 end
@@ -59,13 +59,13 @@ classdef Fuzzy < handle
         
         end %GetStates()
        
-        function diffstates = GetDiffStates(obj)                
-                diffstates = ['posHorz';
-                'posVert';
-                'velHorz';
-                'velVert'];
+        function diffstates = GetDiffStates(obj)
+                        diffstates = ['posHorz' '0';
+                'posVert', 0;
+                'velHorz', 0;
+                'velVert', 0];
         
-        end %GetDiffStates()
+        end %GetStates()
         
         function states = GetStates(obj)
             states = obj.states;

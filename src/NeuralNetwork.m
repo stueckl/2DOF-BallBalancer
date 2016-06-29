@@ -27,7 +27,7 @@ classdef NeuralNetwork
         
         % calculates network
         function out = calculate(obj, inputs)
-            
+            out= 'Not implemented';
         end %end train
         
         function train(obj, inputs, targets)
