@@ -90,7 +90,7 @@ classdef NeuralFuzzyController < handle
                 
                 %learn
             end
-            obj.matAngValY.Surf();
+            obj.matAngValX.Surf();
             
         end
     end
