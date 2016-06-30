@@ -19,7 +19,7 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 1;
+            obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
             SerialPort.CloseAll();
@@ -28,32 +28,32 @@ classdef Controller < handle
             disp(obj.comPorts)
             %start business logic         
             obj.model = Model(obj);
+            
             obj.initDVS();
             obj.dvs.Connect();
             if obj.useDemoBool == 0 
-                obj.servo_x = Servos(obj.comPorts(2), 1000000);
-                obj.servo_y = Servos(obj.comPorts(1), 1000000);
+                obj.servo_x = Servos(obj.comPorts(3), 1000000);
+                obj.servo_y = Servos(obj.comPorts(2), 1000000);
             end
                      
             %TODO: start view (if useful)
-            
             obj.view = BallBalancerView(obj);
             tic
         end
         
-        %TODO: Put into clean abstract class ofr DVSs
+        %TODO: Put into clean abstract class of DVSs
         function initDVS(obj)
             %init dvs
             if obj.useDemoBool == 1
                 obj.dvs = DVS128Demo(obj.comPorts(1), 6000000);
             else
-                obj.dvs = DVS128(obj.comPorts(3), 6000000);
+                obj.dvs = DVS128(obj.comPorts(1), 6000000);
             end
         end
         
         
         %TODO: put into model
-        function OnNewEvent(obj,eventcount)
+        function OnNewEvent(obj, elapsed)
             
             %overload function
             %if nargin < 1
@@ -64,7 +64,7 @@ classdef Controller < handle
             %position and velocity
             
             %logic
-            obj.model.OnNewEvent(obj.dvs.GetEvents());
+            obj.model.OnNewEvent(obj.dvs.GetEvents(), elapsed);
             
             %move servo
             if (obj.useDemoBool == 0)
@@ -80,7 +80,8 @@ classdef Controller < handle
             time = 0;
             while obj.isRunning
                 %DEBUG: display time needed for loop
-                disp(toc - time);
+                elapsed = toc - time;
+                disp(elapsed)
                 time = toc;
           
                 %check for new events
@@ -89,8 +90,8 @@ classdef Controller < handle
                 %check for new events
                 %TODO: solve it event based
                 if obj.dvs.EventsAvailable()
-                        %calculate model
-                        obj.OnNewEvent();                        
+                    %calculate model
+                    obj.OnNewEvent(elapsed);                        
                         
                 end %if obj.dvs.EventsAvailable()
                 pause(0);

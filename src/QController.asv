@@ -103,7 +103,7 @@ classdef QController < handle
                 
                 %learn
             end
-            obj.matAngValX.Surf();
+            obj.matAngValY.Surf();
             
         end
     end
