@@ -27,8 +27,8 @@ classdef Fuzzy < handle
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
-            obj.minVel = [-10;-10];
-            obj.maxVel = [10;10];
+            obj.minVel = [-12;-12];
+            obj.maxVel = [12;12];
             
             obj.posPercOneState = 0;
             obj.velPercOneState = 0;
@@ -39,19 +39,19 @@ classdef Fuzzy < handle
             
         end %Fuzzy
         
-        function diffstates = GetNumStatesPerVariable(obj)
+        function count = GetNumStatesPerVariable(obj)
             %TODO: Not best solution
-            diffstates = ['posHorz' '0';
-                'posVert', 0;
-                'velHorz', 0;
-                'velVert', 0];
+            diffstates = obj.GetDiffStates();
+            num = size(diffstates);
+            count = zeros(num(1),1);
             %iterate States
             for n = 1:length(obj.states)
                 %iterate different states. search for hits
-                for j = 1:(length(diffstates)/2)
-                    diffstates(j,:)
-                    compstr = strrep(obj.states(n),diffstates(j,1),'');
-                    %if 
+                for j = 1:num(1)
+                    str = strrep(obj.states(n),diffstates(j,:),'');
+                    if  ~strcmp(obj.states(n),str)
+                       count(j) = count(j) + 1; 
+                    end
                     %diffstates(j,2) = [posName(1,:) , strrep(states(n),posName(1,:),'')];
                     %end
                 end
@@ -59,13 +59,13 @@ classdef Fuzzy < handle
         
         end %GetStates()
        
-        function diffstates = GetDiffStates(obj)
-                        diffstates = ['posHorz' '0';
-                'posVert', 0;
-                'velHorz', 0;
-                'velVert', 0];
+        function diffstates = GetDiffStates(obj)                
+                diffstates = ['posHorz';
+                'posVert';
+                'velHorz';
+                'velVert'];
         
-        end %GetStates()
+        end %GetDiffStates()
         
         function states = GetStates(obj)
             states = obj.states;
@@ -95,10 +95,13 @@ classdef Fuzzy < handle
                  ( velocity(1)<obj.minVel(1) ) || ( velocity(2)<obj.minVel(2) ) || ...
                  ( velocity(1)>obj.maxVel(1) ) || ( velocity(2)>obj.maxVel(2) ) )
                 
+                LimitValue()
                 msg = 'Position or Velocity outside of expected interval. Change the minPos ... maxVel Properties of Fuzzy.';
                 disp('position and velocity values')
                 disp([position(1), position(2), velocity(1), velocity(2)])
                 error(msg)
+                
+                
             end
             
                 
@@ -157,6 +160,15 @@ classdef Fuzzy < handle
             end
             
         end %getPercentage
+        
+        function newvalue = LimitValue(obj,value, min, max)
+            newvalue = value;
+            if  value > max 
+                newvalue(1) = max;
+            elseif value < min 
+                newvalue = min;
+            end
+        end %LimitValues
         
         
     end % methods

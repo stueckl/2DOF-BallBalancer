@@ -80,8 +80,8 @@ classdef Controller < handle
             time = 0;
             while obj.isRunning
                 %DEBUG: display time needed for loop
-                %disp(toc - time);
-                %time = toc;
+                disp(toc - time);
+                time = toc;
           
                 %check for new events
                 %if new events calculate

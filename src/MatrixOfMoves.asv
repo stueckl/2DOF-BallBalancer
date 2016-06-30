@@ -4,29 +4,49 @@ classdef MatrixOfMoves < handle
     
     properties
         mat
+        propabilities
     end
     
     methods
         function obj = MatrixOfMoves(Pos, Vel)
-            obj.mat = rand([Pos Vel]);
-            disp(obj.mat);
+            obj.mat = zeros([Pos Vel]);
+            obj.propabilities = zeros(4,3);
         end
         
         function move = GetMoveByPercentages(obj, PosPercentage, VelPercentage)
             %iterate and add all propabilities 
             move = 0;
-            for n = PosPercentage
-                if obj.percentages(n) ~= 0
-                    for m = VelPercentage
-                        %if probability exists for posadd this value
-                        if obj.percentages(m) ~= 0
-                            disp(obj.mat(n,m));
-                            move = move + (obj.percentages(i) * obj.mat(n,m));
+            i = 1;
+            for n = 1:length(PosPercentage)
+                if PosPercentage(n) ~= 0
+                    for m = 1:length(VelPercentage)
+                        %if probability exists for pos and vel add this
+                        %value to move
+                        if VelPercentage(m) ~= 0
+                            obj.propabilities(i,1:3) = [n, m, PosPercentage(n)*VelPercentage(m)];
+                            move = move + (PosPercentage(n)* VelPercentage(m) * obj.mat(n,m));
+                            i = i +1;
                         end %if
                     end %for
                 end %if
             end %for
+
             
+        end
+        
+        function Surf(obj)
+            figure(2)
+            surf(obj.mat);
+        end
+        
+        function MoveWasGood(obj,betterVal)
+            s = size(obj.propabilities);
+            %for lines in obj.propabilities
+            for i = 1:s(1)
+                
+            end
+            disp(s(1));
+            disp(obj.propabilities);
         end
     end
     

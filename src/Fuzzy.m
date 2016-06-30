@@ -27,8 +27,8 @@ classdef Fuzzy < handle
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
-            obj.minVel = [-10;-10];
-            obj.maxVel = [10;10];
+            obj.minVel = [-12;-12];
+            obj.maxVel = [12;12];
             
             obj.posPercOneState = 0;
             obj.velPercOneState = 0;
@@ -95,10 +95,12 @@ classdef Fuzzy < handle
                  ( velocity(1)<obj.minVel(1) ) || ( velocity(2)<obj.minVel(2) ) || ...
                  ( velocity(1)>obj.maxVel(1) ) || ( velocity(2)>obj.maxVel(2) ) )
                 
-                msg = 'Position or Velocity outside of expected interval. Change the minPos ... maxVel Properties of Fuzzy.';
-                disp('position and velocity values')
+                velocity(1) = obj.LimitValue(velocity(1),obj.minVel(1),obj.maxVel(1));
+                velocity(2) = obj.LimitValue(velocity(2),obj.minVel(2),obj.maxVel(2));
+                disp('Position or Velocity outside of expected interval. Change the minPos ... maxVel Properties of Fuzzy.')
                 disp([position(1), position(2), velocity(1), velocity(2)])
-                error(msg)
+                
+                
             end
             
                 
@@ -157,6 +159,15 @@ classdef Fuzzy < handle
             end
             
         end %getPercentage
+        
+        function newvalue = LimitValue(obj,value, min, max)
+            newvalue = value;
+            if  value > max 
+                newvalue(1) = max;
+            elseif value < min 
+                newvalue = min;
+            end
+        end %LimitValues
         
         
     end % methods

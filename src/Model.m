@@ -24,15 +24,17 @@ classdef Model < handle
             obj.ServoPositionX = 0;
             obj.ServoPositionY = 0;
             obj.neuralFuzzyController = NeuralFuzzyController();
+            obj.angVal = [0,0];
         end %Model
         
         function OnNewEvent(obj, Events)
+            disp('new event')
             %first filter events from out of border (they are worthless)
-            obj.buffer.Add(obj.filters.DataFilter(Events))
+            obj.buffer.Add(obj.filters.DataFilter(Events));
             %position calculation and first simple velocity 
             [obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
             
-            %regler, choose one              
+            %regler, choose one  
             obj.PDController();
             %disp(obj.angVal);
             obj.NeuralFuzzyController();
@@ -65,7 +67,9 @@ classdef Model < handle
         end
         
         function NeuralFuzzyController(obj) 
+            PDAngVal = obj.angVal;
             obj.angVal = obj.neuralFuzzyController.Calculate(obj.ballPos, obj.ballVel);
+            obj.neuralFuzzyController.LearnFrom(PDAngVal);
         end                     
             
     end %methods
