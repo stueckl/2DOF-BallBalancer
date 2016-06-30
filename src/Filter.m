@@ -28,7 +28,7 @@ classdef Filter < handle
         end %CircularFilter()
         
         
-        function [ballPos, ballVel] = DetermineBallPosition(obj, filteredData)
+        function [ballPos] = DetermineBallPosition(obj, filteredData)
             %ToDo DBSCAN cluster center?
             
             ballPos = [0, 0];
@@ -38,14 +38,6 @@ classdef Filter < handle
             IDX=DBSCAN(A,epsilon,MinPts);
             clusterNumb = mode(IDX);
             ballPos   = mean(A(IDX==clusterNumb, :));
-            ballVel = [0, 0];
-            epsilon=6;
-            MinPts=10;
-            A=filteredData(:, 1:2);
-            IDX=DBSCAN(A,epsilon,MinPts);
-            clusterNumb = mode(IDX);
-            ballPos1   = mean(A(IDX==clusterNumb, :));
-            ballVel = ballPos - ballPos1;
             
         end % DetermineBallPosition()
     end
