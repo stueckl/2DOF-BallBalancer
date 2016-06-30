@@ -19,7 +19,7 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 0;
+            obj.useDemoBool = 1;
             
             %start services (Model gets only data from services)
             SerialPort.CloseAll();

@@ -29,8 +29,8 @@ classdef QController < handle
             %add a create a matrix  for each state and variable
             %Matrixes are build ['posHorz', 'velHorz']
             obj.fuzzyStatesPerVariable = transpose(obj.fuzzyLogic.GetNumStatesPerVariable());                      
-            obj.matAngValX = MatrixOfMoves(obj.fuzzyStatesPerVariable(1), obj.fuzzyStatesPerVariable(3));
-            obj.matAngValY = MatrixOfMoves(obj.fuzzyStatesPerVariable(2), obj.fuzzyStatesPerVariable(4));
+            obj.matAngValX = MatrixOfMoves(obj.fuzzyStatesPerVariable(1), obj.fuzzyStatesPerVariable(3), 5);
+            obj.matAngValY = MatrixOfMoves(obj.fuzzyStatesPerVariable(2), obj.fuzzyStatesPerVariable(4), 5);
             %load nets based on States names from subfolders
             
             %third layer of logic
@@ -56,16 +56,16 @@ classdef QController < handle
             
             obj.angVal(1) = obj.matAngValX.GetMoveByPercentages(obj.percentages(1:6),obj.percentages(13:22));
             obj.angVal(2) = obj.matAngValY.GetMoveByPercentages(obj.percentages(7:12),obj.percentages(23:32));
-            if obj.learning
-                obj.randomfaktor = obj.randomWeight * (0.5 - rand(1));
-                obj.randAngVal = obj.randomfaktor + obj.angVal; 
-                angVal = obj.randAngVal;
-            else
-                angVal = obj.angVal;
-            end
+            angVal = obj.angVal;
             
             
         end % Calculate()
+        
+        function angVal = CalculateBest(obj)
+            angVal(1) = obj.matAngValX.GetBestMove(obj.percentages(1:6),obj.percentages(13:22));
+            angVal(2) = obj.matAngValY.GetBestMove(obj.percentages(7:12),obj.percentages(23:32));
+
+        end
         
         function rew = reward()
             %reward decreased distance to center,
@@ -82,23 +82,26 @@ classdef QController < handle
         
         %goal is a value betwen -1 and 1 for good or bad previous action
         %val 1 stands for X and 2 for Y
-        function Learn(obj,val,betterVal)
+        function Learn(obj,val,betterVal,reward)
             if val == 1
-                obj.matAngValX.MoveWasGood(betterVal);
+                obj.matAngValX.Learn(betterVal,reward);
             else
-                obj.matAngValY.MoveWasGood(betterVal);
+                obj.matAngValY.Learn(betterVal,reward);
             end
         end
         
         %Learn from is for offline learning from other algorithms
         function LearnFrom(obj,goalAngVal)
+            bestMove = obj.CalculateBest();
             %iterate each output variable
-            for val = 1:length(goalAngVal)
-                %check if new value (random) is nearer to matrix value, if
-                %yes it is a good value -> learn it.
-                if abs(goalAngVal(val)- obj.randAngVal(val)) < abs(goalAngVal(val)-obj.angVal(val))
+            s = size(goalAngVal);
+            for val = 1:s(2)
+                %check if move is better than best move
+                if abs(goalAngVal(val)- obj.angVal(val)) < abs(goalAngVal(val)-bestMove(val))
                     %learn
-                    obj.Learn(val,obj.randAngVal(val));
+                    obj.Learn(val,obj.angVal(val),1.1);
+                else
+                    obj.Learn(val,obj.angVal(val),0.95);
                 end
                 
                 %learn

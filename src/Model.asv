@@ -34,13 +34,13 @@ classdef Model < handle
             %first filter events from out of border (they are worthless)
             obj.buffer.Add(obj.filters.DataFilter(Events));
             %position calculation and velocity
-            %obj.CalcBallPosAndVel(elapsed);
-            [obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
+            obj.CalcBallPosAndVel(elapsed);
+            %[obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
             
             %regler, choose one  
             obj.PDController();
-            %disp(obj.angVal);
-            %obj.QController();
+            disp(obj.angVal);
+            obj.QController();
             %disp(obj.angVal);
             
            %calculate motor movement
@@ -80,13 +80,13 @@ classdef Model < handle
         end %GetServoPositionX()
         
         function PDController(obj)
-            obj.angVal = 9*(obj.newBallPos - 60) + 40*(obj.ballVel);
+            obj.angVal = 9*(obj.newBallPos - 60) + 0.07*(obj.ballVel);
         end
         
         function QController(obj) 
             PDAngVal = obj.angVal;
             if length(obj.newBallPos) == 2
-                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel);
+                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
                 obj.qController.LearnFrom(PDAngVal);
             end
         end                     
