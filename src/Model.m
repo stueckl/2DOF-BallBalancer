@@ -31,11 +31,11 @@ classdef Model < handle
         end %Model
         
         function OnNewEvent(obj, Events, elapsed)
-            disp('new event')
             %first filter events from out of border (they are worthless)
             obj.buffer.Add(obj.filters.DataFilter(Events));
             %position calculation and velocity
-            obj.CalcBallPosAndVel(elapsed)
+            obj.CalcBallPosAndVel(elapsed);
+            %[obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
             
             %regler, choose one  
             obj.PDController();
@@ -65,7 +65,6 @@ classdef Model < handle
                obj.oldBallPos = obj.newBallPos;
             end
             obj.ballVel = (obj.newBallPos - obj.oldBallPos)/elapsed;
-            obj.ballVel
         end %calcBallPosAndVel
         
         function UpdateOldBallPosition(obj)
@@ -81,13 +80,15 @@ classdef Model < handle
         end %GetServoPositionX()
         
         function PDController(obj)
-            obj.angVal = 9*(obj.newBallPos - 60) + 40*(obj.ballVel);
+            obj.angVal = 9*(obj.newBallPos - 60) + 0.07*(obj.ballVel);
         end
         
         function QController(obj) 
             PDAngVal = obj.angVal;
-            obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel);
-            obj.qController.LearnFrom(PDAngVal);
+            if length(obj.newBallPos) == 2
+                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
+                obj.qController.LearnFrom(PDAngVal);
+            end
         end                     
             
     end %methods

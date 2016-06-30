@@ -27,8 +27,8 @@ classdef Fuzzy < handle
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
-            obj.minVel = [-12;-12];
-            obj.maxVel = [12;12];
+            obj.minVel = [-120;-120];
+            obj.maxVel = [120;120];
             
             obj.posPercOneState = 0;
             obj.velPercOneState = 0;
@@ -131,7 +131,7 @@ classdef Fuzzy < handle
         
         function percentage = getPercentage(obj, state, posvelValue, pos0vel1)
             if pos0vel1
-                width = 120/(obj.numVelStates + obj.velPercOneState -1);
+                width = 1/(obj.numVelStates + obj.velPercOneState -1);
                 totalWidth = (2-obj.velPercOneState)*width;
                 
                 startInterval = (state)*width-totalWidth;

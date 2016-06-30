@@ -35,7 +35,7 @@ classdef MatrixOfMoves < handle
         end
         
         function Surf(obj)
-            figure(2)
+            figure(3)
             surf(obj.mat);
         end
         
