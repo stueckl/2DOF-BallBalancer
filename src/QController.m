@@ -1,4 +1,4 @@
-classdef NeuralFuzzyController < handle
+classdef QController < handle
     %NEURALFUZZYCONTROLLER Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -18,7 +18,7 @@ classdef NeuralFuzzyController < handle
     end
     
     methods
-        function obj = NeuralFuzzyController()
+        function obj = QController()
             %first layer of logic
             obj.learning = 1;
             obj.randomWeight = 1;
@@ -67,6 +67,10 @@ classdef NeuralFuzzyController < handle
             
         end % Calculate()
         
+        function rew = reward()
+            
+        end %reward()
+        
         %goal is a value betwen -1 and 1 for good or bad previous action
         %val 1 stands for X and 2 for Y
         function Learn(obj,val,betterVal)
@@ -85,10 +89,7 @@ classdef NeuralFuzzyController < handle
                 %yes it is a good value -> learn it.
                 if abs(goalAngVal(val)- obj.randAngVal(val)) < abs(goalAngVal(val)-obj.angVal(val))
                     %learn
-                    disp(goalAngVal(val));
-                    disp(obj.randAngVal(val));
-                    disp(obj.angVal(val));
-                    obj.Learn(val,obj.randAngVal(val))
+                    obj.Learn(val,obj.randAngVal(val));
                 end
                 
                 %learn
