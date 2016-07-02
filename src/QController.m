@@ -67,7 +67,10 @@ classdef QController < handle
 
         end
         
-        function rew = reward()
+        %reward is a value between 0.x to 1.x to increasing or decreasing
+        %the percentage values bigger than 1 are rewards and lower than 1
+        %punishments
+        function reward = rewardDist(obj, newBallPos, oldBallPos, center)
             %reward decreased distance to center,
             %distXOld = abs(ballXNew - CenterX)
             %distXNew = abs(ballXOld - CenterX)
@@ -75,10 +78,49 @@ classdef QController < handle
             %if improvedDistance > distXOld punish
             %same for y
             
+            %set to neutral
+            reward = [1,1];
             
+            %calculate improved distance to center
+            distOld = abs(oldBallPos - center);
+            distNew = abs(newBallPos - center);
+            imprDist = distOld - distNew;
+            
+            %reward if greater than zero, punish otherwise
+            reward = reward .* 2 .* obj.sigmoid(0.01*imprDist);
+
             %reward low speed in center
+            %reward = reward .* 2. * obj.sigmoid(1./abs(ballVel));
             
         end %reward()
+        
+        function reward = rewardDistAndVel(obj, newBallPos, oldBallPos, ballVel, center)
+            %reward decreased distance to center,
+            %distXOld = abs(ballXNew - CenterX)
+            %distXNew = abs(ballXOld - CenterX)
+            %improvedDistance = distXOld - distXNew
+            %if improvedDistance > distXOld punish
+            %same for y
+            
+            %set to neutral
+            reward = [1,1];
+            
+            %calculate improved distance to center
+            distOld = abs(oldBallPos - center);
+            distNew = abs(newBallPos - center);
+            imprDist = distOld - distNew;
+            
+            %reward if greater than zero, punish otherwise
+            reward = reward .* 2 .* obj.sigmoid(0.01*imprDist);
+
+            %reward low speed in center
+            %reward = reward .* 2. * obj.sigmoid(1./abs(ballVel));
+            
+        end %reward()
+        
+        function g = sigmoid(obj, z)
+          g = 1.0 ./ ( 1.0 + exp(-z)); 
+        end %end sigmoid
         
         %goal is a value betwen -1 and 1 for good or bad previous action
         %val 1 stands for X and 2 for Y

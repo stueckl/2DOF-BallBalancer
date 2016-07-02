@@ -47,7 +47,7 @@ classdef Model < handle
             if ( (length(obj.angVal)<2) || (length(obj.newBallPos)<2) )
                 disp(obj.angVal);
 
-            elseif ( (abs(obj.angVal(1)) < 500) && (abs(obj.angVal(2)) < 500) )
+            else%if ( (abs(obj.angVal(1)) < 500) && (abs(obj.angVal(2)) < 500) )
                 %put them to gui
                 obj.controller.view.update(obj.buffer.GetAll(), obj.newBallPos, 0.5*obj.ballVel);
 
@@ -85,6 +85,8 @@ classdef Model < handle
         
         function QController(obj) 
             PDAngVal = obj.angVal;
+            reward = obj.qController.rewardDist(obj.newBallPos, obj.oldBallPos, [60, 60]);
+            disp(reward)
             if length(obj.newBallPos) == 2
                 obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
                 obj.qController.LearnFrom(PDAngVal);

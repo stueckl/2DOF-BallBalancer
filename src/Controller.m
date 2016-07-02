@@ -94,7 +94,7 @@ classdef Controller < handle
                     obj.OnNewEvent(elapsed);                        
                         
                 end %if obj.dvs.EventsAvailable()
-                pause(0);
+                pause(0.5);
             end %while
 %             save('lastRun.mat', 'dat');
         end %Run()

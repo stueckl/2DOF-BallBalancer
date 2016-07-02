@@ -39,7 +39,7 @@ classdef Model < handle
             
             %regler, choose one  
             obj.PDController();
-            disp(obj.angVal);
+            %disp(obj.angVal);
             obj.QController();
             %disp(obj.angVal);
             
@@ -53,6 +53,7 @@ classdef Model < handle
 
                 obj.ServoPositionX = 2048+obj.angVal(1);
                 obj.ServoPositionY = 2048-obj.angVal(2);
+            
             end           
             
             obj.UpdateOldBallPosition();
@@ -85,6 +86,8 @@ classdef Model < handle
         
         function QController(obj) 
             PDAngVal = obj.angVal;
+            reward = obj.qController.reward1(obj.newBallPos, obj.oldBallPos, obj.ballVel, [60, 60]);
+            disp(reward)
             if length(obj.newBallPos) == 2
                 obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
                 obj.qController.LearnFrom(PDAngVal);
