@@ -99,9 +99,9 @@ classdef QController < handle
                 %check if move is better than best move
                 if abs(goalAngVal(val)- obj.angVal(val)) < abs(goalAngVal(val)-bestMove(val))
                     %learn
-                    obj.Learn(val,obj.angVal(val),1.1);
+                    obj.Learn(val,obj.angVal(val),0.1);
                 else
-                    obj.Learn(val,obj.angVal(val),0.95);
+                    obj.Learn(val,obj.angVal(val),-0.1);
                 end
                 
                 %learn

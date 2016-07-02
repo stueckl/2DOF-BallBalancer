@@ -91,7 +91,10 @@ classdef MatrixOfMoves < handle
                 pos = obj.propabilities(i,1);
                 vel = obj.propabilities(i,2);
                 act = obj.propabilities(i,3);
-                obj.mat(pos, vel, act) = obj.mat(pos, vel, act)* obj.propabilities(i,4)*reward;
+                obj.mat(pos, vel, act) = obj.mat(pos, vel, act) + obj.propabilities(i,4)*reward;
+                if obj.mat(pos, vel, act) < 0
+                    obj.mat(pos, vel, act) = 0;
+                end                
                 obj.NormalizeState(pos, vel);
             end
         end
