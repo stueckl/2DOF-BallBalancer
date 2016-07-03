@@ -94,7 +94,7 @@ classdef Controller < handle
                     obj.OnNewEvent(elapsed);                        
                         
                 end %if obj.dvs.EventsAvailable()
-                pause(0.5);
+                pause(0);
             end %while
 %             save('lastRun.mat', 'dat');
         end %Run()
@@ -161,6 +161,14 @@ classdef Controller < handle
         end
         
         function Destructor(obj)
+            datetime=datestr(now);
+            datetime=strrep(datetime,':','_'); %Replace colon with underscore
+            datetime=strrep(datetime,'-','_');%Replace minus sign with underscore
+            datetime=strrep(datetime,' ','_');%Replace space with underscore
+            matX = obj.model.qController.matAngValX;
+            matY = obj.model.qController.matAngValY;
+            save(datetime, 'matX', 'matY')
+            
             obj.stopLoop();
             if ~isequal(instrfind, [])
                 fclose(instrfind);

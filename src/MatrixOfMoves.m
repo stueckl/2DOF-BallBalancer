@@ -81,7 +81,7 @@ classdef MatrixOfMoves < handle
         
         function Surf(obj)
             figure(3)
-            surf(squeeze(obj.mat(:,1,:)));
+            surf(squeeze(obj.mat(:,4,:)));
         end
         
         function Learn(obj,betterVal,reward)

@@ -87,7 +87,7 @@ classdef QController < handle
             imprDist = distOld - distNew;
             
             %reward if greater than zero, punish otherwise
-            reward = reward .* 2 .* obj.sigmoid(0.01*imprDist);
+            reward = 10*(reward .* 2 .* obj.sigmoid(0.01*imprDist)-1);
 
             %reward low speed in center
             %reward = reward .* 2. * obj.sigmoid(1./abs(ballVel));
@@ -111,7 +111,7 @@ classdef QController < handle
             imprDist = distOld - distNew;
             
             %reward if greater than zero, punish otherwise
-            reward = reward .* 2 .* obj.sigmoid(0.01*imprDist);
+            reward = 10*(reward .* 2 .* obj.sigmoid(0.01*imprDist)-1);
 
             %reward low speed in center
             %reward = reward .* 2. * obj.sigmoid(1./abs(ballVel));

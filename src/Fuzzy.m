@@ -27,8 +27,8 @@ classdef Fuzzy < handle
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
-            obj.minVel = [-120;-120];
-            obj.maxVel = [120;120];
+            obj.minVel = [-250;-250];
+            obj.maxVel = [250;250];
             
             obj.posPercOneState = 0;
             obj.velPercOneState = 0;
