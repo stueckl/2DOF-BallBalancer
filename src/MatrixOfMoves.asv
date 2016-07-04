@@ -29,9 +29,6 @@ classdef MatrixOfMoves < handle
         
         function obj = NormalizeState(obj, Pos, Vel)
            obj.mat(Pos,Vel,:) = obj.mat(Pos,Vel,:) /sum(obj.mat(Pos,Vel,:));
-           if isnan(obj.mat(Pos,Vel,1))
-               error('error');
-           end
         end
         
         function id = GetActionByPropability(obj,Pos, Vel)
@@ -66,49 +63,47 @@ classdef MatrixOfMoves < handle
             obj.move = 0;
             i = 1;
             for n = 1:length(PosPercentage)
-                %if PosPercentage(n) ~= 0
+                if PosPercentage(n) ~= 0
                     for m = 1:length(VelPercentage)
                         %if probability exists for pos and vel add this
                         %value to move
-                        %if VelPercentage(m) ~= 0
+                        if VelPercentage(m) ~= 0
                             act = obj.GetActionByPropability(n,m);
+                            disp(size(obj.propabilities));
+                disp(n);
+                                disp(m);
+                                                disp(act);
                             obj.propabilities(i,1:end) = [n, m, act, PosPercentage(n)*VelPercentage(m)];
                             obj.move = obj.move + (PosPercentage(n)* VelPercentage(m) * obj.actions(act));
                             i = i +1;
-                        %end %if
+                        end %if
                     end %for
-               % end %if
+                end %if
             end %for
-            move = obj.move;  
+            move = obj.move;          
         end
         
         function Surf(obj)
             figure(3)
-            surf(squeeze(obj.mat(3,:,:)));
+            surf(squeeze(obj.mat(:,4,:)));
         end
         
         function Learn(obj,betterVal,reward)
             s = size(obj.propabilities);
             %for lines in obj.propabilities
-            if ~isnan(reward)
-                for i = 1:s(1)
-                    pos = obj.propabilities(i,1);
-                    vel = obj.propabilities(i,2);
-                    act = obj.propabilities(i,3);
-                    newval = obj.mat(pos, vel, act) + obj.propabilities(i,4)*reward;
-                    %for robustnes
-                    if ~isnan(newval)
-                     obj.mat(pos, vel, act) = newval;
-                    else
-                        disp('uncool nan value calculated!')
-                    end
-                    if obj.mat(pos, vel, act) < 0.0002
-                        obj.mat(pos, vel, act) = 0.0002;
-                        %disp('learned down to zero!')
-                    end 
-
-                    obj.NormalizeState(pos, vel);
+            for i = 1:s(1)
+                if if obj.mat(pos, vel, act) ==  == NaN
+                pos = obj.propabilities(i,1);
+                vel = obj.propabilities(i,2);
+                act = obj.propabilities(i,3);
+                obj.mat(pos, vel, act) = obj.mat(pos, vel, act) + obj.propabilities(i,4)*reward;
+                if obj.mat(pos, vel, act) < 0
+                    obj.mat(pos, vel, act) = 0;
+                end 
+                if obj.mat(pos, vel, act) == NaN
+                    error('nan');
                 end
+                obj.NormalizeState(pos, vel);
             end
         end
     end

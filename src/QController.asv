@@ -100,16 +100,14 @@ classdef QController < handle
             moveVector = newBallPos - oldBallPos;
             
             %calculate part of the vector which points in direction center
-            centMove = centVector*moveVector'/norm(centVector)/norm(moveVector);
+            centMove = centVector*normalize(moveVector)';
             
             if norm(moveVector) > norm(centVector)
                 reward = [- 0.05 -0.05];
-            elseif centMove > 0.5
-                reward = [0.1, 0.1];
-            else
-                reward = [-0.1, -0.1];
+            else if 
+                reward = [centMove/5000, centMove/5000];
             end
-                centMove
+                reward
             
         end %reward()
         
@@ -136,7 +134,7 @@ classdef QController < handle
             s = size(goalAngVal);
             for val = 1:s(2)
                 %check if move is better than best move
-                if abs(goalAngVal(val)- obj.angVal(val)) < 70 %abs(goalAngVal(val)-bestMove(val))
+                if abs(goalAngVal(val)- obj.angVal(val)) < abs(goalAngVal(val)-bestMove(val))
                     %learn
                     obj.Learn(val,obj.angVal(val),0.1);
                 else

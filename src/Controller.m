@@ -19,7 +19,7 @@ classdef Controller < handle
         function obj = Controller()
             
             % set this to 1 if application needs to start in demo mode
-            obj.useDemoBool = 1;
+            obj.useDemoBool = 0;
             
             %start services (Model gets only data from services)
             SerialPort.CloseAll();
@@ -81,7 +81,7 @@ classdef Controller < handle
             while obj.isRunning
                 %DEBUG: display time needed for loop
                 elapsed = toc - time;
-                disp(elapsed)
+                %disp(elapsed)
                 time = toc;
           
                 %check for new events
@@ -94,7 +94,7 @@ classdef Controller < handle
                     obj.OnNewEvent(elapsed);                        
                         
                 end %if obj.dvs.EventsAvailable()
-                pause(0);
+                pause(1.);
             end %while
 %             save('lastRun.mat', 'dat');
         end %Run()

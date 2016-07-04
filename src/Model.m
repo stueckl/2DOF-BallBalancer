@@ -14,6 +14,8 @@ classdef Model < handle
         ballVel
         angVal
         qController
+        PDAngVal
+        iteration
         
     end %properties
     
@@ -28,6 +30,7 @@ classdef Model < handle
             obj.angVal = [0,0];
             obj.oldBallPos = -1;
             obj.newBallPos = -1;
+            iteration = 0;
         end %Model
         
         function OnNewEvent(obj, Events, elapsed)
@@ -42,17 +45,21 @@ classdef Model < handle
             %disp(obj.angVal);
             obj.QController();
             %disp(obj.angVal);
+            %obj.QControllerFromPD();
             
            %calculate motor movement
             if ( (length(obj.angVal)<2) || (length(obj.newBallPos)<2) )
                 disp(obj.angVal);
 
-            else%if ( (abs(obj.angVal(1)) < 500) && (abs(obj.angVal(2)) < 500) )
+            elseif ( (abs(obj.angVal(1)) < 500) && (abs(obj.angVal(2)) < 500) )
                 %put them to gui
                 obj.controller.view.update(obj.buffer.GetAll(), obj.newBallPos, 0.5*obj.ballVel);
-
+                %disp(obj.angVal)
                 obj.ServoPositionX = 2048+obj.angVal(1);
                 obj.ServoPositionY = 2048-obj.angVal(2);
+            else
+                disp('>500')
+                disp(obj.angVal)
             end           
             
             obj.UpdateOldBallPosition();
@@ -64,7 +71,8 @@ classdef Model < handle
             if(obj.oldBallPos == -1)
                obj.oldBallPos = obj.newBallPos;
             end
-            obj.ballVel = (obj.newBallPos - obj.oldBallPos)/elapsed;
+            obj.ballVel = (obj.newBallPos - obj.oldBallPos)/(elapsed);
+            disp(obj.ballVel)
         end %calcBallPosAndVel
         
         function UpdateOldBallPosition(obj)
@@ -85,8 +93,9 @@ classdef Model < handle
         
         function QController(obj) 
             %PDAngVal = obj.angVal;
-            reward = obj.qController.rewardDist(obj.newBallPos, obj.oldBallPos, [60, 60]);
-            disp(reward)
+            reward = obj.qController.reward2(obj.newBallPos, obj.oldBallPos, [60, 60]);
+            %reward = obj.qController.reward2(obj.newBallPos, obj.oldBallPos, [60, 60]);
+            %disp(reward)
             %first learn old move seperate for x and y
             s = size(obj.angVal);
             for val = 1:s(2)
@@ -95,11 +104,29 @@ classdef Model < handle
             %calculate new move
             if length(obj.newBallPos) == 2
                 
-                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
+                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel);
 
                 %obj.qController.Learn(PDAngVal);
             end
-        end                     
+        end   
+        function QControllerFromPD(obj)
+            %calculate new move
+            if length(obj.newBallPos) == 2
+                obj.PDController();
+                disp('PDController')
+                disp(obj.angVal)
+                if obj.iteration == 1
+                    obj.qController.LearnFrom(obj.angVal);
+                end
+                obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel);
+                disp('QController')
+                disp(obj.angVal)
+                %obj.angVal = PDAngVal;
+
+                %obj.qController.Learn(PDAngVal);
+                obj.iteration = 1;
+            end
+        end  
             
     end %methods
     

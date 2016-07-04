@@ -22,16 +22,16 @@ classdef Fuzzy < handle
         function obj = Fuzzy()
             
             % all settings here
-            obj.numPosStates = 10;
+            obj.numPosStates = ;
             obj.numVelStates = 10;
             
             obj.minPos = [0;0];
             obj.maxPos = [120;120];
-            obj.minVel = [-400;-400];
-            obj.maxVel = [400;400];
+            obj.minVel = [-500;-500];
+            obj.maxVel = [500;500];
             
-            obj.posPercOneState = 1;
-            obj.velPercOneState = 1;
+            obj.posPercOneState = 0;
+            obj.velPercOneState = 0;
             % end settings
            
             obj.states = obj.createStates();           
