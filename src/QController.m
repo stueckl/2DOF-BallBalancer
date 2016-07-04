@@ -130,6 +130,8 @@ classdef QController < handle
             else
                 obj.matAngValY.Learn(betterVal,reward);
             end
+            %obj.matAngValX.Surf();
+
         end
         
         %Learn from is for offline learning from other algorithms

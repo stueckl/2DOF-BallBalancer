@@ -38,7 +38,7 @@ classdef Model < handle
             %[obj.ballPos, obj.ballVel] = obj.filters.DetermineBallPosition(obj.buffer.GetAll());
             
             %regler, choose one  
-            obj.PDController();
+            %obj.PDController();
             %disp(obj.angVal);
             obj.QController();
             %disp(obj.angVal);
@@ -84,12 +84,20 @@ classdef Model < handle
         end
         
         function QController(obj) 
-            PDAngVal = obj.angVal;
+            %PDAngVal = obj.angVal;
             reward = obj.qController.rewardDist(obj.newBallPos, obj.oldBallPos, [60, 60]);
             disp(reward)
+            %first learn old move seperate for x and y
+            s = size(obj.angVal);
+            for val = 1:s(2)
+                    obj.qController.Learn(val,obj.angVal(val),reward(val));
+            end
+            %calculate new move
             if length(obj.newBallPos) == 2
+                
                 obj.angVal = obj.qController.Calculate(obj.newBallPos, obj.ballVel)*100;
-                obj.qController.LearnFrom(PDAngVal);
+
+                %obj.qController.Learn(PDAngVal);
             end
         end                     
             

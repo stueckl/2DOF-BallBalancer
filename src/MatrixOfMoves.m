@@ -24,7 +24,7 @@ classdef MatrixOfMoves < handle
             
             
             %init empty
-            obj.propabilities = zeros(4,4);
+            obj.propabilities = ones(4,4);
         end
         
         function obj = NormalizeState(obj, Pos, Vel)
@@ -91,6 +91,11 @@ classdef MatrixOfMoves < handle
                 pos = obj.propabilities(i,1);
                 vel = obj.propabilities(i,2);
                 act = obj.propabilities(i,3);
+                disp(size(obj.propabilities));
+                disp(size(obj.mat));
+                disp(pos);
+                                disp(vel);
+                                                disp(act);
                 obj.mat(pos, vel, act) = obj.mat(pos, vel, act) + obj.propabilities(i,4)*reward;
                 if obj.mat(pos, vel, act) < 0
                     obj.mat(pos, vel, act) = 0;
